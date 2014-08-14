@@ -26,4 +26,8 @@ class Game
 
 end
 
-Game.new.render
+game = Game.new
+game.render
+
+game.board[[2, 1]].perform_slide([3,2])
+game.render
