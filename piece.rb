@@ -5,11 +5,11 @@ VECTORS = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
 class Piece
 	attr_accessor :board, :position, :color
 
-	def initialize(board, position, color)
+	def initialize(board, position, color, is_king = false)
 		@board = board
 		@position = position
 		@color = color
-		@is_king = false
+		@is_king = is_king
 	end
 
 	def is_king?
@@ -53,6 +53,7 @@ class Piece
 		if valid_jumps.include?(destination)
 			remove_jumped_piece(destination)
 			move_piece(destination)
+			# perform_jump on two more forward spots
 			true
 		else
 			false
@@ -90,6 +91,20 @@ class Piece
 		end
 	end
 
+	def perform_moves!(move_sequence)
+		if move_sequence.length == 1
+			perform_slide(move_sequence.first) || perform_jump(move_sequence.first)
+		else
+			move_sequence.all? do |move|
+				perform_jump(move)
+			end
+		end
+	end
+
+	def valid_move_sequence?(move_sequence)
+		board.clone[position].perform_moves!(move_sequence)
+	end
+
 	def has_enemy?(position)
 		!board[position].nil? && board[position].color != self.color
 	end
@@ -109,4 +124,7 @@ class Piece
 		print "[#{character}]"
 	end
 
+	def clone(board)
+		self.class.new(board, position.dup, color, is_king?)
+	end
 end

@@ -4,7 +4,8 @@ class Game
 	attr_accessor :board
 
 	def initialize
-		@board = Board.new(8)
+		@board = Board.new
+		@board.add_starting_pieces
 	end
 
 	def run
@@ -22,20 +23,46 @@ class Game
 		puts "#{board.active_player.to_s.capitalize}'s turn."
 		moved = false
 		until moved
-			puts "Which piece (i.e. '0,1')?"
-			j1, i1 = gets.chomp.split(",").map { |coord| coord.to_i }
-
-			puts "Where are you going?"
-			j2, i2 = gets.chomp.split(",").map { |coord| coord.to_i }
-
-			piece = board[[i1, j1]]
-
-			if !piece.nil? && piece.color == board.active_player
-				moved = piece.perform_slide([i2, j2]) || piece.perform_jump([i2, j2])
+			begin
+				puts "Which piece (i.e. '0,1')?"
+				j, i = gets.chomp.split(",").map { |coord| coord.to_i }
+				piece = board[[i, j]]
+				raise EmptySquareError if piece.nil?
+				raise NachoPieceError unless piece.color == board.active_player
+			rescue EmptySquareError
+				puts "There's no piece there."
+				retry
+			rescue NachoPieceError
+				puts "That's not your piece."
+				retry
 			end
 
-			puts "That was not a valid move." unless moved
+			move_sequence = get_move_sequence
+
+		 	moved = perform_moves(piece, move_sequence)
+
+			puts "Not valid." unless moved
 		end
+	end
+
+	def perform_moves(piece, move_sequence)
+		if piece.valid_move_sequence?(move_sequence)
+			piece.perform_moves!(move_sequence)
+		else
+			false
+		end
+	end
+
+	def get_move_sequence
+		moves = []
+		while true
+			puts "Next move? (just hit enter to end move sequence)"
+			input = gets.chomp
+			break if input == ""
+			j, i = input.split(",").map { |coord| coord.to_i }
+			moves << [i, j]
+		end
+		moves
 	end
 
 	def render
@@ -52,17 +79,3 @@ class Game
 end
 
 Game.new.run
-# game.render
-# puts
-
-# game.board[[2, 1]].perform_slide([3,2])
-# game.render
-# puts
-
-# game.board[[3, 2]].perform_slide([4,3])
-# game.render
-# puts
-
-# game.board[[5, 2]].perform_jump([3,4])
-# game.render
-# puts

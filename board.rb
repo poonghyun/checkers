@@ -3,13 +3,15 @@ require './piece.rb'
 class Board
 	attr_accessor :grid, :active_player, :size
 
-	def initialize(size = 8)
-		@size = size
+	def initialize(active_player = :red)
+		@size = 8
 		@grid = Array.new(size) { Array.new(size) }
-		add_starting_pieces
-		# self.grid[6][3] = Piece.new(self, [6, 3], :black)
-		# self.grid[1][2] = Piece.new(self, [1, 2], :red)
-		@active_player = :red
+		@active_player = active_player
+
+		# @grid[1][2] = Piece.new(self, [1, 2], :black)
+		# @grid[3][2] = Piece.new(self, [3, 2], :black)
+		# @grid[5][2] = Piece.new(self, [5, 2], :black)
+		# @grid[6][3] = Piece.new(self, [6, 3], :red)
 	end
 
 	def [](pos)
@@ -51,6 +53,15 @@ class Board
 	# returns all pieces of a specified color in an array
 	def find_color(color)
 		grid.flatten.compact.select { |piece| piece.color == color }
+	end
+
+	def clone
+		board_clone = self.class.new(self.active_player)
+		pieces = grid.flatten.compact
+		pieces.each do |piece|
+			board_clone[piece.position]= piece.clone(board_clone)
+		end
+		board_clone
 	end
 
 end
