@@ -6,3 +6,6 @@ end
 
 class NachoPieceError < InvalidMoveError
 end
+
+class ForcedJumpError < InvalidMoveError
+end

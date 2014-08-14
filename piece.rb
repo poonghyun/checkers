@@ -25,7 +25,7 @@ class Piece
 		move_diffs.each do |diff|
 			valid_slides << [position.first + diff.first, position.last + diff.last]
 		end
-		# at this point we have two positions
+		# at this point we have two or four positions
 
 		valid_slides.select! do |move|
 			on_board?(move) && board[move].nil?
@@ -41,6 +41,17 @@ class Piece
 	end
 
 	def perform_jump(destination)
+		if next_jumps.include?(destination)
+			remove_jumped_piece(destination)
+			move_piece(destination)
+			true
+		else
+			false
+		end
+	end
+
+	# returns possible jump locations for a piece
+	def next_jumps
 		valid_jumps = []
 		move_diffs.each do |diff|
 			valid_jumps << [position.first + (diff.first * 2), position.last + (diff.last * 2)]
@@ -48,15 +59,6 @@ class Piece
 
 		valid_jumps.select! do |move|
 			on_board?(move) && enemy_between?(move) && board[move].nil?
-		end
-
-		if valid_jumps.include?(destination)
-			remove_jumped_piece(destination)
-			move_piece(destination)
-			# perform_jump on two more forward spots
-			true
-		else
-			false
 		end
 	end
 
@@ -95,14 +97,17 @@ class Piece
 		if move_sequence.length == 1
 			perform_slide(move_sequence.first) || perform_jump(move_sequence.first)
 		else
-			move_sequence.all? do |move|
-				perform_jump(move)
-			end
+			move_sequence.all? { |move| perform_jump(move) }
 		end
 	end
 
 	def valid_move_sequence?(move_sequence)
-		board.clone[position].perform_moves!(move_sequence)
+		piece_clone = board.clone[position]
+		valid = piece_clone.perform_moves!(move_sequence)
+		if valid
+			raise ForcedJumpError unless piece_clone.next_jumps.empty?
+		end
+		valid
 	end
 
 	def has_enemy?(position)
