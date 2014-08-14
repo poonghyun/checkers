@@ -8,10 +8,10 @@ class Board
 		@grid = Array.new(size) { Array.new(size) }
 		@active_player = active_player
 
-		@grid[1][2] = Piece.new(self, [1, 2], :black)
-		@grid[3][2] = Piece.new(self, [3, 2], :black)
-		@grid[5][2] = Piece.new(self, [5, 2], :black)
-		@grid[6][3] = Piece.new(self, [6, 3], :red)
+		# @grid[1][2] = Piece.new(self, [1, 2], :black)
+		# @grid[3][2] = Piece.new(self, [3, 2], :black)
+		# @grid[5][2] = Piece.new(self, [5, 2], :black)
+		# @grid[6][3] = Piece.new(self, [6, 3], :red)
 	end
 
 	def [](pos)

@@ -5,7 +5,7 @@ class Game
 
 	def initialize
 		@board = Board.new
-		#@board.add_starting_pieces
+		@board.add_starting_pieces
 	end
 
 	def run
@@ -38,7 +38,7 @@ class Game
 			end
 
 			move_sequence = get_move_sequence
-			
+
 			begin
 		 		moved = perform_moves(piece, move_sequence)
 		 	rescue ForcedJumpError
