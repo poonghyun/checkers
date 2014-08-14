@@ -51,6 +51,7 @@ class Piece
 		end
 
 		if valid_jumps.include?(destination)
+			remove_jumped_piece(destination)
 			move_piece(destination)
 			true
 		else
@@ -62,11 +63,20 @@ class Piece
 		board[position] = nil
 		board[destination] = self
 		self.position = destination
+		self.is_king = true if destination.first % 7 == 0 # hardcode for now
+	end
+
+	def remove_jumped_piece(destination)
+		middle_row = (destination.first + position.first) / 2
+		middle_col = (destination.last + position.last) / 2
+		board[[middle_row, middle_col]] = nil
 	end
 
 	# returns true if there is there is an enemy in the intermediary square
 	def enemy_between?(destination)
-		
+		middle_row = (destination.first + position.first) / 2
+		middle_col = (destination.last + position.last) / 2
+		has_enemy?([middle_row, middle_col])
 	end
 
 	# returns the differentials a piece can move in
@@ -88,10 +98,6 @@ class Piece
 		!board[position].nil? && board[position].color == self.color
 	end
 
-	def opposite(color)
-		(color == :black) ? :red : :black
-	end
-
 	def on_board?(position)
 		row = position.first
 		col = position.last
@@ -99,7 +105,8 @@ class Piece
 	end
 
 	def draw
-		print "[#{color.to_s[0]}]"
+		character = (is_king?) ? color.to_s[0].upcase : color.to_s[0]
+		print "[#{character}]"
 	end
 
 end

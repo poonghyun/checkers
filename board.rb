@@ -7,6 +7,8 @@ class Board
 		@size = size
 		@grid = Array.new(size) { Array.new(size) }
 		add_starting_pieces
+		# self.grid[6][3] = Piece.new(self, [6, 3], :black)
+		# self.grid[1][2] = Piece.new(self, [1, 2], :red)
 		@active_player = :red
 	end
 
@@ -38,16 +40,17 @@ class Board
 		nil
 	end
 
+	def flip_active_player
+		if active_player == :black
+			self.active_player = :red
+		else
+			self.active_player = :black
+		end
+	end
+
 	# returns all pieces of a specified color in an array
 	def find_color(color)
-		pieces = []
-		grid.each do |row|
-			row.each do |square|
-				next if square.nil?
-				pieces << square if square.color == color
-			end
-		end
-		pieces
+		grid.flatten.compact.select { |piece| piece.color == color }
 	end
 
 end
