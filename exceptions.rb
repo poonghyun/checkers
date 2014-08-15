@@ -9,3 +9,6 @@ end
 
 class ForcedJumpError < InvalidMoveError
 end
+
+class NoMoveProvidedError < InvalidMoveError
+end

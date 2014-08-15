@@ -35,9 +35,17 @@ class Game
 			rescue NachoPieceError
 				puts "That's not your piece."
 				retry
+			rescue TypeError
+				puts "Invalid input."
+				retry
 			end
 
-			move_sequence = get_move_sequence
+			begin
+				move_sequence = get_move_sequence
+			rescue NoMoveProvidedError
+				puts "You didn't provide any moves."
+				retry
+			end
 
 			begin
 		 		moved = perform_moves(piece, move_sequence)
@@ -66,14 +74,23 @@ class Game
 			j, i = input.split(",").map { |coord| coord.to_i }
 			moves << [i, j]
 		end
+		raise NoMoveProvidedError if moves.empty?
 		moves
 	end
 
 	def render
 		board.grid.each_with_index do |row, row_index|
 			print " #{row_index} "
-			row.each do |square|
-				square.nil? ? (print "[ ]") : square.draw
+			row.each_with_index do |square, col_index|
+				background = :white
+				if (row_index + col_index).even?
+					background = :light_blue
+				end
+				if square.nil?
+					print "   ".colorize( :background => background )
+				else
+					print square.draw.colorize( :background => background )
+				end
 			end
 			puts
 		end

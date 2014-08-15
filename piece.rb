@@ -1,4 +1,5 @@
 require './exceptions.rb'
+require 'colorize'
 
 VECTORS = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
 
@@ -126,7 +127,7 @@ class Piece
 
 	def draw
 		character = (is_king?) ? color.to_s[0].upcase : color.to_s[0]
-		print "[#{character}]"
+		" #{character.colorize(color)} "
 	end
 
 	def clone(board)
